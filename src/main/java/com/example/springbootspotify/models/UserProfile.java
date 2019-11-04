@@ -66,7 +66,6 @@ public class UserProfile {
     }
 
     public void setUser(User user) {
-
         this.user = user;
     }
 }

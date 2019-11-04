@@ -55,96 +55,41 @@ public class UserServiceTest {
     private UserRole userRole;
 
     @Before
-    public void initializeDummyUser() {
+    public void initializeUser() {
         user.setUsername("batman");
         user.setPassword("robin");
         user.setId(1L);
-        user.setUsername("user1");
-        user.setPassword("pw1");
         user.setUserRole(userRole);
-        //user.setSongs(song);
     }
 
     @Test
     public void login_ValidUser_Success() {
-        String encodedPassword = "123";
-        String generatedToken = "456";
+        String Password = "123";
+        String newToken = "456";
 
         when(userRepository.findByUsername(any())).thenReturn(user);
-        when(bCryptPasswordEncoder.encode(any())).thenReturn(encodedPassword);
+        when(bCryptPasswordEncoder.encode(any())).thenReturn(Password);
         when(bCryptPasswordEncoder.matches(any(), any())).thenReturn(true);
-        when(jwtUtil.generateToken(any())).thenReturn(generatedToken);
+        when(jwtUtil.generateToken(any())).thenReturn(newToken);
 
         String token = userService.login(user);
         assertThat(token).isNotNull();
-        assertThat(token).isEqualTo(generatedToken);
+        assertEquals(token, newToken);
+    }
 
+
+    @Test
+    public void getUser_ReturnsUser_Success() {
+        when(userRepository.findByUsername(anyString())).thenReturn(user);
+        User tempUser = userService.getUser(user.getUsername());
+        assertEquals(tempUser.getUsername(), user.getUsername());
+    }
+
+
+    @Test
+    public void login_UserNotFound_Error() {
+        when(userRepository.findByUsername(anyString())).thenReturn(null);
+        String token = userService.login(user);
+        assertEquals(token, null);
     }
 }
-
-
-//    @Test
-//    public void getUser_ReturnsUser_Success(){
-//
-//        when(userRepository.findByUsername(anyString())).thenReturn(user);
-//
-//        User tempUser = userService.getUser(user.getUsername());
-//
-//        assertEquals(tempUser.getUsername(), user.getUsername());
-//    }
-
-//    @Test
-//    public void login_UserNotFound_Error(){
-//
-//        when(userRepository.findByUsername(anyString())).thenReturn(null);
-//
-//        String token = userService.login(user);
-//
-//        assertEquals(token, null);
-//    }
-
-//    @Test
-//    public void login1_UserFound_Success(){
-//        String expectedToken = "12345";
-//        when(userRepository.findByUsername(anyString())).thenReturn(user);
-//        when(bCryptPasswordEncoder.matches(any(),any())).thenReturn(true);
-//        when(jwtUtil.generateToken(any())).thenReturn(expectedToken);
-//
-//        String token = userService.login(user);
-//
-//        assertEquals(expectedToken, token);
-//    }
-
-
-
-//    @Test
-//    public void login_UserFound_Success() {
-//        String expectedToken = "12345";
-//
-//        userRole.setName("ROLE_ADMIN");
-//
-//        user.setId(1L);
-//        user.setUsername("batman");
-//        user.setPassword("robin");
-//        user.setUserRole(userRole);
-//
-//        when(userRepository.findByUsername(anyString())).thenReturn(user);
-//
-//        when(jwtUtil.generateToken(any())).thenReturn(expectedToken);
-//        when(bCryptPasswordEncoder.encode(user.getPassword())).thenReturn("robin");
-//
-//        String actualToken = userService.createUser(user);
-//
-//        assertEquals(expectedToken, actualToken);
-//    }
-
-//    @Test
-//    public void createUser_UserFound_Succes(){
-//
-//        when(userRepository.findByUsername(anyString())).thenReturn(null);
-//
-//        String token = userService.login(user);
-//
-//        assertEquals(token, null);
-//    }
-//}
